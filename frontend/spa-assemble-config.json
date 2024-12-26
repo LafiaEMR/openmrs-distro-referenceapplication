@@ -12,7 +12,7 @@
     "@openmrs/esm-generic-patient-widgets-app": "next",
     "@openmrs/esm-help-menu-app": "next",
     "@openmrs/esm-home-app": "next",
-    "@openmrs/esm-implementer-tools-app": "next",
+    "@openmrs/esm-implementer-tools-app": "lafia-esm-implementer-tools.tgz",
     "@openmrs/esm-laboratory-app": "next",
     "@openmrs/esm-login-app": "next",
     "@openmrs/esm-openconceptlab-app": "next",
@@ -30,17 +30,19 @@
     "@openmrs/esm-patient-notes-app": "next",
     "@openmrs/esm-patient-orders-app": "next",
     "@openmrs/esm-patient-programs-app": "next",
-    "@openmrs/esm-patient-registration-app": "next",
-    "@openmrs/esm-patient-search-app": "next",
+    "@openmrs/esm-patient-registration-app": "lafia-esm-patient-registration.tgz",
+    "@openmrs/esm-patient-search-app": "lafia-esm-patient-search-app.tgz",
     "@openmrs/esm-patient-tests-app": "next",
     "@openmrs/esm-patient-vitals-app": "next",
-    "@openmrs/esm-primary-navigation-app": "next",
+    "@openmrs/esm-primary-navigation-app": "lafia-esm-primary-navigation-app.tgz",
     "@openmrs/esm-service-queues-app": "next",
     "@openmrs/esm-system-admin-app": "next",
     "@openmrs/esm-user-onboarding-app": "next",
     "@openmrs/esm-ward-app": "next",
     "@openmrs/esm-stock-management-app": "next",
-    "@openmrs/esm-billing-app": "next"
+    "@openmrs/esm-billing-app": "next",
+    "@openmrs/esm-app-shell": "lafia-esm-app-shell.tgz",
+    "@openmrs/esm-styleguide": "lafia-esm-styleguide.tgz"
   },
   "excludedFrontendModules": []
 }

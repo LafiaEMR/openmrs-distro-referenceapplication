@@ -9,8 +9,24 @@ ARG APP_SHELL_VERSION=next
 RUN mkdir -p /app
 WORKDIR /app
 
+
+COPY packages/lafia-esm-implementer-tools.tgz .
+COPY packages/lafia-esm-patient-registration.tgz .
+COPY packages/lafia-esm-patient-search-app.tgz .
+COPY packages/lafia-esm-primary-navigation-app.tgz .
+COPY packages/lafia-esm-styleguide.tgz .
+COPY packages/lafia-esm-app-shell.tgz .
+
+
 COPY spa-assemble-config.json .
 COPY spa-build-config.json .
+
+RUN yarn add ./lafia-esm-implementer-tools.tgz
+RUN yarn add ./lafia-esm-patient-registration.tgz
+RUN yarn add ./lafia-esm-patient-search-app.tgz
+RUN yarn add ./lafia-esm-primary-navigation-app.tgz
+RUN yarn add ./lafia-esm-styleguide.tgz
+RUN yarn add ./lafia-esm-app-shell.tgz
 
 ARG CACHE_BUST
 RUN npx --legacy-peer-deps openmrs@${APP_SHELL_VERSION:-next} assemble --manifest --mode config --config spa-assemble-config.json --target ./spa
