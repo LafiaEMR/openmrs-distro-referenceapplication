@@ -10,23 +10,28 @@ RUN mkdir -p /app
 WORKDIR /app
 
 
-COPY packages/lafia-esm-implementer-tools.tgz .
-COPY packages/lafia-esm-patient-registration.tgz .
-COPY packages/lafia-esm-patient-search-app.tgz .
-COPY packages/lafia-esm-primary-navigation-app.tgz .
-COPY packages/lafia-esm-styleguide.tgz .
-COPY packages/lafia-esm-app-shell.tgz .
-
+COPY packages/openmrs-esm-implementer-tools-app-6.1.2-lafia.tgz .
+COPY packages/openmrs-esm-patient-registration-app-8.1.2-lafiamrs.tgz .
+COPY packages/openmrs-esm-patient-search-app-8.2.1-lafiamrs.tgz .
+COPY packages/openmrs-esm-primary-navigation-app-6.2.2-lafiamrs.tgz .
+COPY packages/openmrs-esm-home-app-5.6.1-lafiamrs.tgz .
+COPY packages/openmrs-esm-ward-app-8.2.1-lafiamrs.tgz .
+COPY packages/openmrs-esm-service-queues-app-8.2.1-lafiamrs.tgz .
+COPY packages/openmrs-esm-patient-list-management-app-8.2.1-lafiamrs.tgz .
+COPY packages/openmrs-esm-appointments-app-8.2.1-lafiamrs.tgz .
 
 COPY spa-assemble-config.json .
 COPY spa-build-config.json .
 
-RUN yarn add ./lafia-esm-implementer-tools.tgz
-RUN yarn add ./lafia-esm-patient-registration.tgz
-RUN yarn add ./lafia-esm-patient-search-app.tgz
-RUN yarn add ./lafia-esm-primary-navigation-app.tgz
-RUN yarn add ./lafia-esm-styleguide.tgz
-RUN yarn add ./lafia-esm-app-shell.tgz
+RUN yarn add ./openmrs-esm-implementer-tools-app-6.1.2-lafia.tgz
+RUN yarn add ./openmrs-esm-patient-registration-app-8.1.2-lafiamrs.tgz
+RUN yarn add ./openmrs-esm-patient-search-app-8.2.1-lafiamrs.tgz
+RUN yarn add ./openmrs-esm-primary-navigation-app-6.2.2-lafiamrs.tgz
+RUN yarn add ./openmrs-esm-home-app-5.6.1-lafiamrs.tgz
+RUN yarn add ./openmrs-esm-ward-app-8.2.1-lafiamrs.tgz
+RUN yarn add ./openmrs-esm-service-queues-app-8.2.1-lafiamrs.tgz
+RUN yarn add ./openmrs-esm-patient-list-management-app-8.2.1-lafiamrs.tgz
+RUN yarn add ./openmrs-esm-appointments-app-8.2.1-lafiamrs.tgz
 
 ARG CACHE_BUST
 RUN npx --legacy-peer-deps openmrs@${APP_SHELL_VERSION:-next} assemble --manifest --mode config --config spa-assemble-config.json --target ./spa
