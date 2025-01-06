@@ -20,6 +20,7 @@ COPY packages/openmrs-esm-service-queues-app-8.2.1-lafiamrs.tgz .
 COPY packages/openmrs-esm-patient-list-management-app-8.2.1-lafiamrs.tgz .
 COPY packages/openmrs-esm-appointments-app-8.2.1-lafiamrs.tgz .
 COPY packages/openmrs-esm-laboratory-app-1.1.0-lafiamrs.tgz .
+COPY packages/openmrs-esm-login-app.tgz .
 
 COPY spa-assemble-config.json .
 COPY spa-build-config.json .
@@ -34,6 +35,7 @@ RUN yarn add ./openmrs-esm-ward-app-8.2.1-lafiamrs.tgz
 RUN yarn add ./openmrs-esm-service-queues-app-8.2.1-lafiamrs.tgz
 RUN yarn add ./openmrs-esm-patient-list-management-app-8.2.1-lafiamrs.tgz
 RUN yarn add ./openmrs-esm-appointments-app-8.2.1-lafiamrs.tgz
+RUN yarn add ./openmrs-esm-login-app.tgz
 
 ARG CACHE_BUST
 RUN npx --legacy-peer-deps openmrs@${APP_SHELL_VERSION:-next} assemble --manifest --mode config --config spa-assemble-config.json --target ./spa
