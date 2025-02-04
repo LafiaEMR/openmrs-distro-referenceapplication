@@ -18,6 +18,7 @@ RUN cp /openmrs_distro/distro/target/sdk-distro/web/openmrs.war /openmrs/distrib
 
 RUN cp /openmrs_distro/distro/target/sdk-distro/web/openmrs-distro.properties /openmrs/distribution/
 RUN cp -R /openmrs_distro/distro/target/sdk-distro/web/modules /openmrs/distribution/openmrs_modules
+
 RUN cp -R /openmrs_distro/distro/target/sdk-distro/web/owa /openmrs/distribution/openmrs_owas
 
 # Clean up after copying needed artifacts
@@ -34,3 +35,11 @@ COPY --from=dev /openmrs/distribution/openmrs-distro.properties /openmrs/distrib
 COPY --from=dev /openmrs/distribution/openmrs_modules /openmrs/distribution/openmrs_modules
 COPY --from=dev /openmrs/distribution/openmrs_owas /openmrs/distribution/openmrs_owas
 COPY --from=dev /openmrs_distro/distro/configuration /openmrs/distribution/openmrs_config
+
+#COPY custom MODULES to openmrs_modules
+COPY --from=dev /openmrs_distro/distro/modules/appointments-2.1.0-lafia.omod /openmrs/distribution/openmrs_modules
+COPY --from=dev /openmrs_distro/distro/modules/bedmanagement-6.1.1-lafia.omod /openmrs/distribution/openmrs_modules
+COPY --from=dev /openmrs_distro/distro/modules/cohort-3.7.4-lafia.omod /openmrs/distribution/openmrs_modules
+COPY --from=dev /openmrs_distro/distro/modules/fhir2-2.3.0-lafia.omod /openmrs/distribution/openmrs_modules
+COPY --from=dev /openmrs_distro/distro/modules/queue-2.5.0-lafia.omod /openmrs/distribution/openmrs_modules
+
