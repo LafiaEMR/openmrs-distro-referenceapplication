@@ -1,0 +1,70 @@
+name: Build and Push Docker Image to AWS ECR
+
+on:
+  push:
+    branches:
+      - development
+      - staging
+
+jobs:
+  build-and-push-frontend:
+    name: Build and Push Frontend Image to AWS ECR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Log into AWS ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.FRONTEND_ECR_REPOSITORY }}
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ secrets.FRONTEND_ECR_REPOSITORY_NAME }}:latest .
+
+      - name: Tag Docker Image
+        run: |
+          docker tag ${{ secrets.FRONTEND_ECR_REPOSITORY_NAME }}:latest ${{ secrets.FRONTEND_ECR_REPOSITORY }}:latest
+
+      - name: Push Docker Image to AWS ECR
+        run: |
+          docker push ${{ secrets.FRONTEND_ECR_REPOSITORY }}:latest
+
+  build-and-push-gateway-image:
+    name: Build and Push Gateway Image to AWS ECR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Log into AWS ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.GATEWAY_ECR_REPOSITORY }}
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ secrets.GATEWAY_ECR_REPOSITORY_NAME }}:latest .
+
+      - name: Tag Docker Image
+        run: |
+          docker tag ${{ secrets.GATEWAY_ECR_REPOSITORY_NAME }}:latest ${{ secrets.GATEWAY_ECR_REPOSITORY }}:latest
+
+      - name: Push Docker Image to AWS ECR
+        run: |
+          docker push ${{ secrets.GATEWAY_ECR_REPOSITORY }}:latest
