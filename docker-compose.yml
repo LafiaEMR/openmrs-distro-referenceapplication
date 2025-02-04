@@ -2,17 +2,23 @@ version: "3.7"
 
 services:
   gateway:
-    image: openmrs/openmrs-reference-application-3-gateway:qa
+    image: thevo/lafia-openmrs-gateway:dev
     restart: "unless-stopped"
     depends_on:
-      - frontend
-      - backend
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     ports:
       - "80:80"
 
   frontend:
-    # image: openmrs/openmrs-reference-application-3-frontend:${TAG:-qa}
-    image: openmrs-frontend
+    image:  thevo/lafia-openmrs-frontend:dev
     restart: "unless-stopped"
     environment:
       SPA_PATH: /openmrs/spa

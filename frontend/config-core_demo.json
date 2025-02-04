@@ -35,6 +35,20 @@
     "defaultFacilityUrl": ""
   },
   "@openmrs/esm-styleguide": {
-    "Brand color #1": "#005d5d"
+    "Brand color #1": "#0f62fe",
+    "Brand color #2": "#0048e1",
+    "Brand color #3": "#14ae5c"
+  },
+  "@openmrs/esm-primary-navigation-app": {
+    "logo": {
+      "src": "logo.png",
+      "alt": "LafiaLink Logo"
+    }
+  },
+  "@openmrs/esm-login-app": {
+    "logo": {
+      "src": "logo.png",
+      "alt": "LafiaLink Logo"
+    }
   }
 }
