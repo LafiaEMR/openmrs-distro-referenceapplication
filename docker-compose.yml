@@ -50,9 +50,9 @@ services:
       OMRS_CONFIG_CONNECTION_PORT: ${OMRS_CONFIG_CONNECTION_PORT:-5432}
       OMRS_DB_DRIVER_CLASS: org.postgresql.Driver
       OMRS_CONFIG_CONNECTION_URL: jdbc:postgresql://postgres-db:5432/openmrs
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/openmrs"]
-      timeout: 5s
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8080/openmrs"]
+    #   timeout: 5s
     volumes:
       - openmrs-data:/openmrs/data
 
