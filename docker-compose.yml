@@ -18,7 +18,7 @@ services:
       - "80:80"
 
   frontend:
-    image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-frontend:latest
+    image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-frontend
     restart: "unless-stopped"
     environment:
       SPA_PATH: /openmrs/spa
