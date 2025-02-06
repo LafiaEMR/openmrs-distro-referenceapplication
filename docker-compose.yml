@@ -33,7 +33,7 @@ services:
 
   backend:
     # image: openmrs/openmrs-reference-application-3-backend:${TAG:-dev3}
-    image: openmrs-backend
+    image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiacore-api
     restart:
       "unless-stopped"
       # condition: service_healthy
