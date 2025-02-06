@@ -56,5 +56,22 @@ services:
     volumes:
       - openmrs-data:/openmrs/data
 
+    # PostgreSQL
+  postgres-db:
+    image: postgres:15
+    restart: "unless-stopped"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${OMRS_DB_USER:-openmrs}"]
+      interval: 3s
+      timeout: 1s
+      retries: 5
+    environment:
+      POSTGRES_DB: openmrs
+      POSTGRES_USER: ${OMRS_DB_USER:-openmrs}
+      POSTGRES_PASSWORD: ${OMRS_DB_PASSWORD:-openmrs}
+    volumes:
+      - pg-db-data:/var/lib/postgresql/data
+
 volumes:
   openmrs-data: ~
+  pg-db-data: ~
