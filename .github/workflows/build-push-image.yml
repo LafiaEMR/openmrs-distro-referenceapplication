@@ -27,6 +27,7 @@ jobs:
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.FRONTEND_ECR_REPOSITORY_PRIVATE }}
 
       - name: Build Docker Image
+        working-directory: ./frontend
         run: |
           docker build -t ${{ secrets.FRONTEND_ECR_REPOSITORY_NAME_PRIVATE }}:latest .
 
@@ -58,6 +59,7 @@ jobs:
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.GATEWAY_ECR_REPOSITORY_PRIVATE }}
 
       - name: Build Docker Image
+        working-directory: ./gateway      
         run: |
           docker build -t ${{ secrets.GATEWAY_ECR_REPOSITORY_NAME_PRIVATE }}:latest .
 
