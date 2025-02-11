@@ -71,4 +71,3 @@ jobs:
         run: |
           docker push ${{ secrets.GATEWAY_ECR_REPOSITORY_PRIVATE }}:latest
 
-#
