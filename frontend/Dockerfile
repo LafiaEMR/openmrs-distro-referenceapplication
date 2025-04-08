@@ -21,6 +21,8 @@ COPY packages/openmrs-esm-patient-list-management-app-8.2.1-lafiamrs.tgz .
 COPY packages/openmrs-esm-appointments-app-8.2.1-lafiamrs.tgz .
 COPY packages/openmrs-esm-laboratory-app-1.1.0-lafiamrs.tgz .
 COPY packages/openmrs-esm-login-app-lafiahms-2.1.tgz .
+COPY packages/kenyaemr-esm-procedure-orders-app-4.0.5-lafiahms.tgz .
+COPY packages/kenyaemr-esm-imaging-orders-app-4.0.5-lafiahms.tgz .
 
 COPY spa-assemble-config.json .
 COPY spa-build-config.json .
@@ -36,6 +38,8 @@ RUN yarn add ./openmrs-esm-service-queues-app-8.2.1-lafiamrs.tgz
 RUN yarn add ./openmrs-esm-patient-list-management-app-8.2.1-lafiamrs.tgz
 RUN yarn add ./openmrs-esm-appointments-app-8.2.1-lafiamrs.tgz
 RUN yarn add ./openmrs-esm-login-app-lafiahms-2.1.tgz
+RUN yarn add ./kenyaemr-esm-procedure-orders-app-4.0.5-lafiahms.tgz .
+RUN yarn add ./kenyaemr-esm-imaging-orders-app-4.0.5-lafiahms.tgz .
 
 ARG CACHE_BUST
 RUN npx --legacy-peer-deps openmrs@${APP_SHELL_VERSION:-next} assemble --manifest --mode config --config spa-assemble-config.json --target ./spa

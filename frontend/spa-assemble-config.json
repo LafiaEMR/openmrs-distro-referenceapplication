@@ -1,5 +1,7 @@
 {
   "frontendModules": {
+    "@kenyaemr/esm-procedure-orders-app": "kenyaemr-esm-procedure-orders-app-4.0.5-lafiahms.tgz",
+    "@kenyaemr/esm-imaging-orders-app":"kenyaemr-esm-imaging-orders-app-4.0.5-lafiahms.tgz",
     "@openmrs/esm-active-visits-app": "latest",
     "@openmrs/esm-appointments-app": "openmrs-esm-appointments-app-8.2.1-lafiamrs.tgz",
     "@openmrs/esm-bed-management-app": "latest",
@@ -38,7 +40,8 @@
     "@openmrs/esm-service-queues-app": "openmrs-esm-service-queues-app-8.2.1-lafiamrs.tgz",
     "@openmrs/esm-system-admin-app": "latest",
     "@openmrs/esm-user-onboarding-app": "latest",
-    "@openmrs/esm-stock-management-app": "latest"
+    "@openmrs/esm-ward-app": "latest",
+    "@openmrs/esm-reports-app": "latest"
   },
-  "excludedFrontendModules": ["@openmrs/esm-billing-app", "@openmrs/esm-ward-app"]
+  "excludedFrontendModules": ["@openmrs/esm-billing-app"]
 }
