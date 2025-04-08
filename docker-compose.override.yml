@@ -11,4 +11,6 @@ services:
 
   backend:
     build:
-      context: .
+      # context: .
+      context: "https://github.com/LafiaEMR/openmrs-core.git#dev2"
+      dockerfile: Dockerfile
