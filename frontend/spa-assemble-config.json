@@ -40,8 +40,8 @@
     "@openmrs/esm-service-queues-app": "openmrs-esm-service-queues-app-8.2.1-lafiamrs.tgz",
     "@openmrs/esm-system-admin-app": "latest",
     "@openmrs/esm-user-onboarding-app": "latest",
-    "@openmrs/esm-ward-app": "latest",
-    "@openmrs/esm-reports-app": "latest"
+    "@openmrs/esm-stock-management-app": "latest",
+    "@openmrs/esm-patient-report-app":"openmrs-esm-patient-report-app-1.0.0-lafiamrs.tgz"
   },
   "excludedFrontendModules": ["@openmrs/esm-billing-app"]
 }
