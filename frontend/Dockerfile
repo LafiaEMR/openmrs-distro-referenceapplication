@@ -13,7 +13,7 @@ WORKDIR /app
 COPY packages/openmrs-esm-implementer-tools-app-6.1.2-lafia.tgz .
 COPY packages/openmrs-esm-patient-registration-app-8.1.2-lafiamrs.tgz .
 COPY packages/openmrs-esm-patient-search-app-8.2.1-lafiamrs.tgz .
-COPY packages/openmrs-esm-primary-navigation-app-6.2.2-lafiamrs.tgz .
+COPY packages/openmrs-esm-primary-navigation-app-6.2.3-lafiamrs.tgz .
 COPY packages/openmrs-esm-home-app-5.6.1-lafiamrs.tgz .
 COPY packages/openmrs-esm-ward-app-8.2.1-lafiamrs.tgz .
 COPY packages/openmrs-esm-service-queues-app-8.2.1-lafiamrs.tgz .
@@ -29,7 +29,7 @@ RUN yarn add ./openmrs-esm-laboratory-app-1.1.0-lafiamrs.tgz
 RUN yarn add ./openmrs-esm-implementer-tools-app-6.1.2-lafia.tgz
 RUN yarn add ./openmrs-esm-patient-registration-app-8.1.2-lafiamrs.tgz
 RUN yarn add ./openmrs-esm-patient-search-app-8.2.1-lafiamrs.tgz
-RUN yarn add ./openmrs-esm-primary-navigation-app-6.2.2-lafiamrs.tgz
+RUN yarn add ./openmrs-esm-primary-navigation-app-6.2.3-lafiamrs.tgz
 RUN yarn add ./openmrs-esm-home-app-5.6.1-lafiamrs.tgz
 RUN yarn add ./openmrs-esm-ward-app-8.2.1-lafiamrs.tgz
 RUN yarn add ./openmrs-esm-service-queues-app-8.2.1-lafiamrs.tgz
