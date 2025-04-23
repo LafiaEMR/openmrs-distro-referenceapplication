@@ -1,0 +1,63 @@
+name: Build and Push Docker Images to AWS ECR
+
+on:
+  push:
+    branches:
+      - development
+      - staging
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service: [frontend, gateway]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Set Variables Based on Service
+        id: vars
+        run: |
+          if [ "${{ matrix.service }}" == "frontend" ]; then
+            echo "WORKING_DIR=./frontend" >> $GITHUB_ENV
+            echo "ECR_REPOSITORY=${{ secrets.FRONTEND_ECR_REPOSITORY_PRIVATE }}" >> $GITHUB_ENV
+          elif [ "${{ matrix.service }}" == "gateway" ]; then
+            echo "WORKING_DIR=./gateway" >> $GITHUB_ENV
+            echo "ECR_REPOSITORY=${{ secrets.GATEWAY_ECR_REPOSITORY_PRIVATE }}" >> $GITHUB_ENV
+          fi
+
+      - name: Log in to AWS ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_REPOSITORY }}
+
+      - name: Set Image Tag
+        id: image_tag
+        run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Set Up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v3
+        with:
+          context: ${{ env.WORKING_DIR }}
+          file: ${{ env.WORKING_DIR }}/Dockerfile
+          push: true
+          tags: |
+            ${{ env.ECR_REPOSITORY }}:latest
+            ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
