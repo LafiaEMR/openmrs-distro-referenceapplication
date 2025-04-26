@@ -40,8 +40,8 @@ jobs:
         env:
           TAG: ${{ env.SHORT_SHA }}
         run: |
-          docker-compose build
-          docker-compose push
+          docker compose build
+          docker compose push
 
       # - name: Login to ECR
       #   run: |
