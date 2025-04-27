@@ -38,7 +38,7 @@ jobs:
         with:
           repository: git@github.com:LafiaEMR/lafia-infrastructure-k8-apps.git
           path: helm-charts
-          ssh-key: ${{ secrets.HELM_REPO_SSH_KEY_ACCESS }}
+          ssh-key: ${{ secrets.HELM_TOKEN }}
           ref: main
       # - name: Setup SSH Key
       #   run: |
