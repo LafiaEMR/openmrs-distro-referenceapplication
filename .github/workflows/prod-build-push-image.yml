@@ -33,19 +33,19 @@ jobs:
           docker compose build
           docker compose push
 
-      # - name: Checkout Helm Chart Repository
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: git@github.com:LafiaEMR/lafia-infrastructure-k8-apps.git
-      #     path: helm-charts
-      #     ssh-key: ${{ secrets.GITHUB_SSH_KEY }}
-      #     ref: main
-      - name: Setup SSH Key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.HELM_REPO_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - name: Checkout Helm Chart Repository
+        uses: actions/checkout@v4
+        with:
+          repository: git@github.com:LafiaEMR/lafia-infrastructure-k8-apps.git
+          path: helm-charts
+          ssh-key: ${{ secrets.GITHUB_SSH_KEY }}
+          ref: main
+      # - name: Setup SSH Key
+      #   run: |
+      #     mkdir -p ~/.ssh
+      #     echo "${{ secrets.HELM_REPO_SSH_KEY }}" > ~/.ssh/id_rsa
+      #     chmod 600 ~/.ssh/id_rsa
+      #     ssh-keyscan github.com >> ~/.ssh/known_hosts
 
       - name: Checkout Helm Chart Repository
         uses: actions/checkout@v4
