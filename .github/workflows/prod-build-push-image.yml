@@ -36,7 +36,7 @@ jobs:
       - name: Checkout Helm Chart Repository
         uses: actions/checkout@v4
         with:
-          repository: git@github.com:LafiaEMR/lafia-infrastructure-k8-apps.git
+          repository: git@github.com:LafiaEMR/lafia-infrastructure-k8-apps
           path: helm-charts
           ssh-key: ${{ secrets.HELM_REPO_SSH_KEY_ACCESS }}
           ref: main
