@@ -15,22 +15,12 @@ jobs:
         run: |
           echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
 
-      # - name: Build Docker Images from Docker Compose FIle
-      #   run: |
-      #     # docker compose build -t repo_name:${{ env.SHORT_SHA }} .
-      #     # docker compose push
-      #     TAG=${{ env.SHORT_SHA }} docker compose build
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
-
-      # - name: Login to ECR
-      #   id: ecr-login
-      #   uses: aws-actions/amazon-ecr-login@v1
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -43,11 +33,31 @@ jobs:
           docker compose build
           docker compose push
 
-      # - name: Login to ECR
-      #   run: |
-      #     aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin 571600871041.dkr.ecr.eu-west-2.amazonaws.com
+      - name: Checkout Helm Chart Repository
+        uses: actions/checkout@v2
+        with:
+          repository: git@github.com:LafiaEMR/lafia-infrastructure-k8-apps.git
+          path: helm-charts
+          ssh-key: ${{ secrets.GITHUB_SSH_KEY }}
 
-      # - name: Push to ECR
-      #   run: |
-      #     # docker compose push repo_name:${{ env.SHORT_SHA }}
-      #     TAG=${{ env.SHORT_SHA }} docker compose push
+      - name: Install yq
+        run: |
+          wget https://github.com/mikefarah/yq/releases/download/v4.33.2/yq_linux_amd64 -O /usr/bin/yq
+          chmod +x /usr/bin/yq
+
+      - name: Update Helm Chart with New Image Tag
+        run: |
+          yq -i '.image.tag = "${{ env.SHORT_SHA }}"' helm-charts/lafiahms-gateway/values.yaml
+          yq -i '.image.tag = "${{ env.SHORT_SHA }}"' helm-charts/lafiahms-frontend/values.yaml
+          yq -i '.image.tag = "${{ env.SHORT_SHA }}"' helm-charts/openmrs-core/values.yaml
+
+      - name: Commit and Push Helm Chart Changes
+        run: |
+          cd helm-charts
+          git config user.name "profgreatwonder"
+          git config user.email "muoghaluchidinma@gmail.com"
+          git add helm-charts/lafiahms-gateway/values.yaml
+          git add helm-charts/lafiahms-frontend/values.yaml
+          git add helm-charts/openmrs-core/values.yaml
+          git commit -m "Update image tag to ${{ env.SHORT_SHA }}"
+          git push origin main
