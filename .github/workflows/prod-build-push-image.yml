@@ -34,11 +34,12 @@ jobs:
           docker compose push
 
       - name: Checkout Helm Chart Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: git@github.com:LafiaEMR/lafia-infrastructure-k8-apps.git
           path: helm-charts
           ssh-key: ${{ secrets.GITHUB_SSH_KEY }}
+          ref: main
 
       - name: Install yq
         run: |
@@ -56,8 +57,6 @@ jobs:
           cd helm-charts
           git config user.name "profgreatwonder"
           git config user.email "muoghaluchidinma@gmail.com"
-          git add helm-charts/lafiahms-gateway/values.yaml
-          git add helm-charts/lafiahms-frontend/values.yaml
-          git add helm-charts/openmrs-core/values.yaml
+          git add helm-charts/lafiahms-gateway/values.yaml helm-charts/lafiahms-frontend/values.yaml helm-charts/openmrs-core/values.yaml
           git commit -m "Update image tag to ${{ env.SHORT_SHA }}"
           git push origin main
