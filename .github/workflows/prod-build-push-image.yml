@@ -55,10 +55,17 @@ jobs:
           ssh-key: ${{ secrets.HELM_REPO_SSH_KEY_ACCESS }}
           ref: main
 
+      # - name: Install yq
+      #   run: |
+      #     wget https://github.com/mikefarah/yq/releases/download/v4.33.2/yq_linux_amd64 -O /usr/bin/yq
+      #     chmod +x /usr/bin/yq
+
       - name: Install yq
         run: |
-          wget https://github.com/mikefarah/yq/releases/download/v4.33.2/yq_linux_amd64 -O /usr/bin/yq
-          chmod +x /usr/bin/yq
+          mkdir -p $HOME/.local/bin
+          wget https://github.com/mikefarah/yq/releases/download/v4.33.2/yq_linux_amd64 -O $HOME/.local/bin/yq
+          chmod +x $HOME/.local/bin/yq
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Update Helm Chart with New Image Tag
         run: |
