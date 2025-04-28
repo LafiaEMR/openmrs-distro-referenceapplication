@@ -69,36 +69,27 @@ jobs:
 
       - name: Update Helm Chart For Apps with New Image Tag
         run: |
-          yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-gateway/values.yaml
-          yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-frontend/values.yaml
-          yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values.yaml
+          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-gateway/values.yaml
+          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-frontend/values.yaml
+          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values.yaml
 
           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
+
+          yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
+          yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+          yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
 
       - name: Commit and Push Helm Chart Changes
         run: |
           cd lafia-infrastructure-k8-apps
           git config user.name "profgreatwonder"
           git config user.email "muoghaluchidinma@gmail.com"
-          git add helm-charts/lafiahms-gateway/values.yaml helm-charts/lafiahms-frontend/values.yaml helm-charts/openmrs-core/values.yaml
+          # git add helm-charts/lafiahms-gateway/values.yaml helm-charts/lafiahms-frontend/values.yaml helm-charts/openmrs-core/values.yaml
+          git add .
           git commit -m "Update image tag to ${{ env.SHORT_SHA }}"
           git push origin main
-
-      # - name: Post Deployment Status to a Slack channel
-      #   if: always()
-      #   uses: rtCamp/action-slack-notify@v2
-      #   env:
-      #     SLACK_CHANNEL: "peerless_licence"
-      #     SLACK_COLOR: ${{ job.status }}
-      #     SLACK_ICON: https://www.google.com/url?sa=i&url=https%3A%2F%2Fdocs.sonarqube.org%2Flatest%2F&psig=AOvVaw0w2T9P8V_lSTbrG3lXodvg&ust=1684621526266000&source=images&cd=vfe&ved=0CA4QjRxqFwoTCMjP36-2gv8CFQAAAAAdAAAAABAD
-      #     SLACK_MESSAGE_ON_SUCCESS: "Distro Passed"
-      #     SLACK_MESSAGE_ON_FAILURE: "Distro Failed"
-      #     SLACK_MESSAGE_ON_CANCEL: "Distro Cancelled"
-      #     SLACK_TITLE: Message
-      #     SLACK_USERNAME: Lafialink
-      #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Notify Slack on Success
         if: success()
@@ -123,3 +114,97 @@ jobs:
           SLACK_MESSAGE: ":x: Failed to build openmrs-distro-referenceapplication/${{ steps.tags.outputs.BRANCH_NAME }} image to ECR"
           SLACK_TITLE: "Build Failed"
           SLACK_USERNAME: GitHub Actions
+# name: Production Build, Push and Deploy
+
+# on:
+#   push:
+#     branches:
+#       - prod-test
+#   workflow_dispatch:
+#     inputs:
+#       tag:
+#         description: 'Tag to deploy (e.g., v1.0.0)'
+#         required: true
+#         type: string
+#       environment:
+#         description: 'Environment to deploy to (sim-final or prod)'
+#         required: true
+#         type: choice
+#         options:
+#           - sim-final
+#           - prod
+
+# jobs:
+#   build_and_push:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v4
+#         with:
+#           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+
+#       - name: Determine Tag and Environment
+#         run: |
+#           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/prod-test" ]]; then
+#             echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
+#             echo "ENVIRONMENT=sim" >> $GITHUB_ENV
+#           elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+#             echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
+#             echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
+#           fi
+
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: eu-west-2
+
+#       - name: Login to Amazon ECR
+#         id: login-ecr
+#         uses: aws-actions/amazon-ecr-login@v1
+
+#       - name: Build and Push Docker Images
+#         env:
+#           TAG: ${{ env.TAG }}
+#         run: |
+#           docker compose build
+#           docker compose push
+
+#       - name: Checkout Infrastructure Repository
+#         uses: actions/checkout@v4
+#         with:
+#           repository: LafiaEMR/lafia-infrastructure-k8-apps
+#           path: lafia-infrastructure-k8-apps
+#           token: ${{ secrets.HELM_REPO_TOKEN }}
+#           ref: main
+
+#       - name: Install yq
+#         run: |
+#           wget https://github.com/mikefarah/yq/releases/download/v4.33.2/yq_linux_amd64 -O /usr/bin/yq
+#           chmod +x /usr/bin/yq
+
+#       - name: Update Environment Tag
+#         run: |
+#           if [[ "${{ env.ENVIRONMENT }}" == "sim" ]]; then
+#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
+#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+#           elif [[ "${{ env.ENVIRONMENT }}" == "sim-final" ]]; then
+#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/sim-final/openmrs-core/openmrs-core.yaml
+#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/sim-final/lafiahms-gateway/lafiahms-gateway.yaml
+#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/sim-final/lafiahms-frontend/lafiahms-frontend.yaml
+#           elif [[ "${{ env.ENVIRONMENT }}" == "prod" ]]; then
+#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/prod/openmrs-core/openmrs-core.yaml
+#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/prod/lafiahms-gateway/lafiahms-gateway.yaml
+#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/prod/lafiahms-frontend/lafiahms-frontend.yaml
+#           fi
+
+#       - name: Commit and Push Tag Changes
+#         run: |
+#           cd lafia-infrastructure-k8-apps
+#           git config user.name "profgreatwonder"
+#           git config user.email "muoghaluchidinma@gmail.com"
+#           git add .
+#           git commit -m "Update ${{ env.ENVIRONMENT }} tag to ${{ env.TAG }}"
+#           git push
