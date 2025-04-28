@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: LafiaEMR/lafia-infrastructure-k8-apps
-          path: helm-charts
+          path: lafia-infrastructure-k8-apps
           ssh-key: ${{ secrets.HELM_REPO_SSH_KEY }}
           ref: main
 
