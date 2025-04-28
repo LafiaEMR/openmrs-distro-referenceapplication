@@ -81,3 +81,41 @@ jobs:
           git add helm-charts/lafiahms-gateway/values.yaml helm-charts/lafiahms-frontend/values.yaml helm-charts/openmrs-core/values.yaml
           git commit -m "Update image tag to ${{ env.SHORT_SHA }}"
           git push origin main
+
+      # - name: Post Deployment Status to a Slack channel
+      #   if: always()
+      #   uses: rtCamp/action-slack-notify@v2
+      #   env:
+      #     SLACK_CHANNEL: "peerless_licence"
+      #     SLACK_COLOR: ${{ job.status }}
+      #     SLACK_ICON: https://www.google.com/url?sa=i&url=https%3A%2F%2Fdocs.sonarqube.org%2Flatest%2F&psig=AOvVaw0w2T9P8V_lSTbrG3lXodvg&ust=1684621526266000&source=images&cd=vfe&ved=0CA4QjRxqFwoTCMjP36-2gv8CFQAAAAAdAAAAABAD
+      #     SLACK_MESSAGE_ON_SUCCESS: "Distro Passed"
+      #     SLACK_MESSAGE_ON_FAILURE: "Distro Failed"
+      #     SLACK_MESSAGE_ON_CANCEL: "Distro Cancelled"
+      #     SLACK_TITLE: Message
+      #     SLACK_USERNAME: Lafialink
+      #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify Slack on Success
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: deployments
+          SLACK_COLOR: good
+          SLACK_ICON: https://github.com/github.png?size=48
+          SLACK_MESSAGE: ":rocket: Successfully built and pushed openmrs-distro-referenceapplication/${{ steps.tags.outputs.BRANCH_NAME }} image to ECR"
+          SLACK_TITLE: "Build Success"
+          SLACK_USERNAME: GitHub Actions
+
+      - name: Notify Slack on Failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: deployments
+          SLACK_COLOR: danger
+          SLACK_ICON: https://github.com/github.png?size=48
+          SLACK_MESSAGE: ":x: Failed to build openmrs-distro-referenceapplication/${{ steps.tags.outputs.BRANCH_NAME }} image to ECR"
+          SLACK_TITLE: "Build Failed"
+          SLACK_USERNAME: GitHub Actions
