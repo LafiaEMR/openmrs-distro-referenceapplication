@@ -82,7 +82,7 @@ jobs:
           cd lafia-infrastructure-k8-apps
           git config user.name "profgreatwonder"
           git config user.email "muoghaluchidinma@gmail.com"
-          git add env/sim/lafiahms-frontend/lafiahms-frontend.yaml env/sim/lafiahms-gateway/lafiahms-gateway.yaml env/sim/openmrs-core/openmrs-core.yaml
+          git add helm-charts/lafiahms-gateway/values.yaml helm-charts/lafiahms-frontend/values.yaml helm-charts/openmrs-core/values.yaml
           git commit -m "Update image tag to ${{ env.SHORT_SHA }}"
           git push origin main
 
