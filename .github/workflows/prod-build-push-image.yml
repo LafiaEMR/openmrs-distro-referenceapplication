@@ -69,9 +69,13 @@ jobs:
 
       - name: Update Helm Chart with New Image Tag
         run: |
-          yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-gateway/values.yaml
-          yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-frontend/values.yaml
-          yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values.yaml
+          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-gateway/values.yaml
+          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-frontend/values.yaml
+          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values.yaml
+
+          yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+          yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+          yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
 
       - name: Commit and Push Helm Chart Changes
         run: |
