@@ -47,13 +47,13 @@ jobs:
       #     chmod 600 ~/.ssh/id_rsa
       #     ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-      - name: Checkout Helm Chart Repository
-        uses: actions/checkout@v4
-        with:
-          repository: LafiaEMR/lafia-infrastructure-k8-apps
-          path: lafia-infrastructure-k8-apps
-          ssh-key: ${{ secrets.HELM_REPO_SSH_KEY }}
-          ref: main
+      # - name: Checkout Helm Chart Repository
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: LafiaEMR/lafia-infrastructure-k8-apps
+      #     path: lafia-infrastructure-k8-apps
+      #     ssh-key: ${{ secrets.HELM_REPO_SSH_KEY }}
+      #     ref: main
 
       - name: Install yq
         run: |
