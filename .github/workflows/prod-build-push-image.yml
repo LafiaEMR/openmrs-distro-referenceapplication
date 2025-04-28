@@ -75,7 +75,7 @@ jobs:
 
       - name: Commit and Push Helm Chart Changes
         run: |
-          cd helm-charts
+          cd lafia-infrastructure-k8-apps
           git config user.name "profgreatwonder"
           git config user.email "muoghaluchidinma@gmail.com"
           git add helm-charts/lafiahms-gateway/values.yaml helm-charts/lafiahms-frontend/values.yaml helm-charts/openmrs-core/values.yaml
