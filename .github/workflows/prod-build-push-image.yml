@@ -114,7 +114,7 @@ jobs:
           SLACK_MESSAGE: ":x: Failed to build openmrs-distro-referenceapplication/${{ steps.tags.outputs.BRANCH_NAME }} image to ECR"
           SLACK_TITLE: "Build Failed"
           SLACK_USERNAME: GitHub Actions
-# name: Production Build, Push and Deploy
+# #name: Production Build, Push and Deploy
 
 # on:
 #   push:
@@ -181,30 +181,43 @@ jobs:
 
 #       - name: Install yq
 #         run: |
-#           wget https://github.com/mikefarah/yq/releases/download/v4.33.2/yq_linux_amd64 -O /usr/bin/yq
-#           chmod +x /usr/bin/yq
+#           mkdir -p $HOME/.local/bin
+#           wget https://github.com/mikefarah/yq/releases/download/v4.33.2/yq_linux_amd64 -O $HOME/.local/bin/yq
+#           chmod +x $HOME/.local/bin/yq
+#           echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+#       - name: Debug - Verify File Before Update
+#         run: |
+#           ls -la lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+#           cat lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
 
 #       - name: Update Environment Tag
 #         run: |
+#           echo "Updating tag to ${{ env.TAG }} for environment ${{ env.ENVIRONMENT }}"
 #           if [[ "${{ env.ENVIRONMENT }}" == "sim" ]]; then
-#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
-#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
-#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
 #           elif [[ "${{ env.ENVIRONMENT }}" == "sim-final" ]]; then
-#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/sim-final/openmrs-core/openmrs-core.yaml
-#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/sim-final/lafiahms-gateway/lafiahms-gateway.yaml
-#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/sim-final/lafiahms-frontend/lafiahms-frontend.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim-final/openmrs-core/openmrs-core.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim-final/lafiahms-gateway/lafiahms-gateway.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim-final/lafiahms-frontend/lafiahms-frontend.yaml
 #           elif [[ "${{ env.ENVIRONMENT }}" == "prod" ]]; then
-#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/prod/openmrs-core/openmrs-core.yaml
-#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/prod/lafiahms-gateway/lafiahms-gateway.yaml
-#             yq -i '(.spec.source.helm.parameters[] | select(.name == "image.tag")).value = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/env/prod/lafiahms-frontend/lafiahms-frontend.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/prod/openmrs-core/openmrs-core.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/prod/lafiahms-gateway/lafiahms-gateway.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/prod/lafiahms-frontend/lafiahms-frontend.yaml
 #           fi
+
+#       - name: Debug - Verify File After Update
+#         run: |
+#           cat lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
 
 #       - name: Commit and Push Tag Changes
 #         run: |
 #           cd lafia-infrastructure-k8-apps
 #           git config user.name "profgreatwonder"
 #           git config user.email "muoghaluchidinma@gmail.com"
+#           git status
 #           git add .
-#           git commit -m "Update ${{ env.ENVIRONMENT }} tag to ${{ env.TAG }}"
+#           git commit -m "Update ${{ env.ENVIRONMENT }} tag to ${{ env.TAG }}" || echo "No changes to commit"
 #           git push
