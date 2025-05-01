@@ -25,7 +25,6 @@
     "@openmrs/esm-patient-flags-app": "next",
     "@openmrs/esm-patient-forms-app": "next",
     "@openmrs/esm-patient-immunizations-app": "next",
-    "@openmrs/esm-patient-list-management-app": "next",
     "@openmrs/esm-patient-lists-app": "next",
     "@openmrs/esm-patient-medications-app": "next",
     "@openmrs/esm-patient-notes-app": "next",
@@ -39,8 +38,7 @@
     "@openmrs/esm-service-queues-app": "next",
     "@openmrs/esm-system-admin-app": "next",
     "@openmrs/esm-user-onboarding-app": "next",
-    "@openmrs/esm-stock-management-app": "next",
-    "@openmrs/esm-patient-report-app":"openmrs-esm-patient-report-app-1.0.0-lafiamrs.tgz"
+    "@lafiahms/esm-patient-report-app":"lafiahms-esm-patient-report-app-1.0.0.tgz"
   },
   "excludedFrontendModules": ["@openmrs/esm-billing-app"]
 }

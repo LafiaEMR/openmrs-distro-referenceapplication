@@ -3,6 +3,12 @@
     "restrictByVisitLocationTag": true,
     "showUpcomingAppointments": true
   },
+  "@openmrs/esm-patient-orders-app": {
+    "showPrintButton": true
+  },
+  "@openmrs/esm-procedure-orders-app": {
+    "showPrintButton": true
+  },
   "@openmrs/esm-service-queues-app": {
     "priorityConfigs": [
       {
