@@ -91,7 +91,7 @@ jobs:
           git commit -m "Update image tag to ${{ env.SHORT_SHA }}"
           git push origin main
 
-      - name: Notify Slack on Success
+      - name: Notify Slack on Successs
         if: success()
         uses: rtCamp/action-slack-notify@v2
         env:
