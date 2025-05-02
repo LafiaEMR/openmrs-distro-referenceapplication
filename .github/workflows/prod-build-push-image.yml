@@ -214,8 +214,8 @@ jobs:
         run: |
           echo "Updating tag to ${{ env.TAG }} for environment ${{ env.ENVIRONMENT }}"
           if [[ "${{ env.ENVIRONMENT }}" == "sim" ]]; then
-            # yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
-            yq -i '.image.tag = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values-sim.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
+            # yq -i '.image.tag = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values-sim.yaml
 
 
             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
