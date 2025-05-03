@@ -223,12 +223,12 @@ jobs:
 
 
           elif [[ "${{ env.ENVIRONMENT }}" == "uat" ]]; then
-            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/uat/openmrs-core/openmrs-core.yaml
           #  yq -i '.image.tag = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values-uat.yaml
 
-            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/uat/lafiahms-gateway/lafiahms-gateway.yaml
 
-            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/uat/lafiahms-frontend/lafiahms-frontend.yaml
 
 
           elif [[ "${{ env.ENVIRONMENT }}" == "prod" ]]; then
