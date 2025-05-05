@@ -290,6 +290,7 @@ on:
       tag:
         description: "Tag to deploy (e.g., v1.0.4). Leave empty for prod to use last UAT tag."
         required: false
+        default: ""
         type: string
       environment:
         description: "Environment to deploy to (uat or prod)"
