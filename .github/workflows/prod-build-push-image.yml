@@ -139,11 +139,11 @@ jobs:
   build_and_push:
     runs-on: ubuntu-latest
     steps:
-      - name: Debug Available Tag
-        run: |
-          git ls-remote --tags origin
-          echo "Input tag: {{ inputs.tag }}"
-          echo "Environment: {{ inputs.environment }}"
+      # - name: Debug Available Tag
+      #   run: |
+      #     git ls-remote --tags origin
+      #     echo "Input tag: {{ inputs.tag }}"
+      #     echo "Environment: {{ inputs.environment }}"
 
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -170,25 +170,35 @@ jobs:
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/prod-test" ]]; then
             echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
             echo "ENVIRONMENT=sim" >> $GITHUB_ENV
-          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.environment }}" == "uat" ]]; then
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
             echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
-          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.environment }}" == "prod" ]]; then
-            if [[ -n "${{ inputs.tag }}" ]]; then
-              echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
-            else
-              echo "Fetching last UAT tag..."
-              git clone --depth 1 https://github.com/LafiaEMR/lafia-infrastructure-k8-apps.git helm-repo
-              LAST_UAT_TAG=$(yq '.spec.source.helm.parameters[] | select(.name == "image.tag") | .value' helm-repo/env/uat/openmrs-core/openmrs-core.yaml)
-              if [[ -z "$LAST_UAT_TAG" ]]; then
-                echo "Error: Could not determine last UAT tag"
-                exit 1
-              fi
-              echo "TAG=$LAST_UAT_TAG" >> $GITHUB_ENV
-              echo "Last UAT tag: $LAST_UAT_TAG"
-            fi
-            echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
           fi
+
+      # - name: Determine Tag and Environment
+      #   run: |
+      #     if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/prod-test" ]]; then
+      #       echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
+      #       echo "ENVIRONMENT=sim" >> $GITHUB_ENV
+      #     elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.environment }}" == "uat" ]]; then
+      #       echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
+      #       echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
+      #     elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.environment }}" == "prod" ]]; then
+      #       if [[ -n "${{ inputs.tag }}" ]]; then
+      #         echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
+      #       else
+      #         echo "Fetching last UAT tag..."
+      #         git clone --depth 1 https://github.com/LafiaEMR/lafia-infrastructure-k8-apps.git helm-repo
+      #         LAST_UAT_TAG=$(yq '.spec.source.helm.parameters[] | select(.name == "image.tag") | .value' helm-repo/env/uat/openmrs-core/openmrs-core.yaml)
+      #         if [[ -z "$LAST_UAT_TAG" ]]; then
+      #           echo "Error: Could not determine last UAT tag"
+      #           exit 1
+      #         fi
+      #         echo "TAG=$LAST_UAT_TAG" >> $GITHUB_ENV
+      #         echo "Last UAT tag: $LAST_UAT_TAG"
+      #       fi
+      #       echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
+      #     fi
 
       # - name: Set Short SHA
       #   run: |
