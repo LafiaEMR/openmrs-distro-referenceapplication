@@ -165,16 +165,6 @@ jobs:
       #       exit 1
       #     fi
 
-      # - name: Determine Tag and Environment
-      #   run: |
-      #     if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/prod-test" ]]; then
-      #       echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
-      #       echo "ENVIRONMENT=sim" >> $GITHUB_ENV
-      #     elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-      #       echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
-      #       echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
-      #     fi
-
       - name: Determine Tag and Environment
         run: |
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/prod-test" ]]; then
