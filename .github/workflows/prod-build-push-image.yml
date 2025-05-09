@@ -1,3 +1,4 @@
+# AWS for just all environments
 name: Production Build, Push and Deploy
 
 on:
@@ -27,6 +28,7 @@ jobs:
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
 
+
       - name: Determine Tag and Environment
         run: |
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/prod-test" ]]; then
@@ -36,6 +38,7 @@ jobs:
             echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
             echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
           fi
+
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -82,7 +85,6 @@ jobs:
 
             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
 
-
           elif [[ "${{ env.ENVIRONMENT }}" == "uat" ]]; then
             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/uat/openmrs-core/openmrs-core.yaml
           #  yq -i '.image.tag = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values-uat.yaml
@@ -90,7 +92,6 @@ jobs:
             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/uat/lafiahms-gateway/lafiahms-gateway.yaml
 
             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/uat/lafiahms-frontend/lafiahms-frontend.yaml
-
 
           elif [[ "${{ env.ENVIRONMENT }}" == "prod" ]]; then
             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/prod/openmrs-core/openmrs-core.yaml
@@ -119,7 +120,7 @@ jobs:
           SLACK_COLOR: good
           SLACK_ICON: https://github.com/github.png?size=48
           SLACK_MESSAGE: ":rocket: Successfully built and pushed openmrs-distro-referenceapplication/${{ steps.tags.outputs.BRANCH_NAME }} image to ECR"
-          SLACK_TITLE: "Build Success"
+          SLACK_TITLE: "Image Built Successfully"
           SLACK_USERNAME: GitHub Actions
 
       - name: Notify Slack on Failure
@@ -131,5 +132,5 @@ jobs:
           SLACK_COLOR: danger
           SLACK_ICON: https://github.com/github.png?size=48
           SLACK_MESSAGE: ":x: Failed to build openmrs-distro-referenceapplication/${{ steps.tags.outputs.BRANCH_NAME }} image to ECR"
-          SLACK_TITLE: "Build Failed"
+          SLACK_TITLE: "Image Build Failed"
           SLACK_USERNAME: GitHub Actions
