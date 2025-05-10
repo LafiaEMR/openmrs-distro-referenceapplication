@@ -1,4 +1,4 @@
-# AWS for just sim environment
+# AWS for just dev environment
 # ***********************************************************************
 
 # name: Production Build, Push and Deploy
@@ -76,13 +76,13 @@
 #           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-frontend/values.yaml
 #           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values.yaml
 
-#           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
-#           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
-#           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
+#           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/dev/lafiahms-frontend/lafiahms-frontend.yaml
+#           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/dev/lafiahms-gateway/lafiahms-gateway.yaml
+#           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/dev/openmrs-core/openmrs-core.yaml
 
-#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
-#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
-#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev/openmrs-core/openmrs-core.yaml
+#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev/lafiahms-gateway/lafiahms-gateway.yaml
+#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev/lafiahms-frontend/lafiahms-frontend.yaml
 
 #       - name: Commit and Push Helm Chart Changes
 #         run: |
@@ -119,7 +119,7 @@
 #           SLACK_USERNAME: GitHub Actions
 # ***********************************************************************
 
-# Olla Systems for just sim environment
+# Olla Systems for just dev environment
 # ***********************************************************************
 
 # name: Production Build, Push and Deploy
@@ -173,13 +173,13 @@
 #           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-frontend/values.yaml
 #           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values.yaml
 
-#           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
-#           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
-#           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
+#           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/dev/lafiahms-frontend/lafiahms-frontend.yaml
+#           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/dev/lafiahms-gateway/lafiahms-gateway.yaml
+#           # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/dev/openmrs-core/openmrs-core.yaml
 
-#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/openmrs-core/openmrs-core.yaml
-#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
-#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/dev/openmrs-core/openmrs-core.yaml
+#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/dev/lafiahms-gateway/lafiahms-gateway.yaml
+#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/dev/lafiahms-frontend/lafiahms-frontend.yaml
 
 #       - name: Commit and Push Helm Chart Changes
 #         run: |
@@ -291,9 +291,9 @@
 #       - name: Update Environment Tag
 #         run: |
 #           echo "Updating tag to ${{ env.TAG }} for environment ${{ env.ENVIRONMENT }}"
-#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/openmrs-core/openmrs-core.yaml
-#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
-#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/dev/openmrs-core/openmrs-core.yaml
+#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/dev/lafiahms-gateway/lafiahms-gateway.yaml
+#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/dev/lafiahms-frontend/lafiahms-frontend.yaml
 
 #       - name: Commit and Push Helm Chart Changes
 #         run: |
@@ -385,7 +385,7 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/prod-test" ]]; then
             echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
-            echo "ENVIRONMENT=sim" >> $GITHUB_ENV
+            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
           elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
             echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
@@ -395,7 +395,7 @@ jobs:
       #   run: |
       #     if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/prod-test" ]]; then
       #       echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
-      #       echo "ENVIRONMENT=sim" >> $GITHUB_ENV
+      #       echo "ENVIRONMENT=dev" >> $GITHUB_ENV
       #     elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.environment }}" == "uat" ]]; then
       #       echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
       #       echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
@@ -476,13 +476,13 @@ jobs:
       - name: Update Environment Tag
         run: |
           echo "Updating tag to ${{ env.TAG }} for environment ${{ env.ENVIRONMENT }}"
-          if [[ "${{ env.ENVIRONMENT }}" == "sim" ]]; then
-            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
-            # yq -i '.image.tag = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values-sim.yaml
+          if [[ "${{ env.ENVIRONMENT }}" == "dev" ]]; then
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev/openmrs-core/openmrs-core.yaml
+            # yq -i '.image.tag = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values-dev.yaml
 
-            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev/lafiahms-gateway/lafiahms-gateway.yaml
 
-            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev/lafiahms-frontend/lafiahms-frontend.yaml
 
           elif [[ "${{ env.ENVIRONMENT }}" == "uat" ]]; then
             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/uat/openmrs-core/openmrs-core.yaml
@@ -571,7 +571,7 @@ jobs:
 #         run: |
 #           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/prod-test" ]]; then
 #             echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
-#             echo "ENVIRONMENT=sim" >> $GITHUB_ENV
+#             echo "ENVIRONMENT=dev" >> $GITHUB_ENV
 #           elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
 #             echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
 #             echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
@@ -610,13 +610,13 @@ jobs:
 #       - name: Update Environment Tag
 #         run: |
 #           echo "Updating tag to ${{ env.TAG }} for environment ${{ env.ENVIRONMENT }}"
-#           if [[ "${{ env.ENVIRONMENT }}" == "sim" ]]; then
-#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/openmrs-core/openmrs-core.yaml
-#             # yq -i '.image.tag = "${{ env.TAG }}"' lafia-infrastructure-k8-apps-olla/helm-charts/openmrs-core/values-sim.yaml
+#           if [[ "${{ env.ENVIRONMENT }}" == "dev" ]]; then
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/dev/openmrs-core/openmrs-core.yaml
+#             # yq -i '.image.tag = "${{ env.TAG }}"' lafia-infrastructure-k8-apps-olla/helm-charts/openmrs-core/values-dev.yaml
 
-#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/dev/lafiahms-gateway/lafiahms-gateway.yaml
 
-#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/dev/lafiahms-frontend/lafiahms-frontend.yaml
 
 #           elif [[ "${{ env.ENVIRONMENT }}" == "uat" ]]; then
 #             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/uat/openmrs-core/openmrs-core.yaml
@@ -724,7 +724,7 @@ jobs:
 #         run: |
 #           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/prod-test" ]]; then
 #             echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
-#             echo "ENVIRONMENT=sim" >> $GITHUB_ENV
+#             echo "ENVIRONMENT=dev" >> $GITHUB_ENV
 #           elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
 #             echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
 #             echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
@@ -734,7 +734,7 @@ jobs:
 #       #   run: |
 #       #     if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/prod-test" ]]; then
 #       #       echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
-#       #       echo "ENVIRONMENT=sim" >> $GITHUB_ENV
+#       #       echo "ENVIRONMENT=dev" >> $GITHUB_ENV
 #       #     elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.environment }}" == "uat" ]]; then
 #       #       echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
 #       #       echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
@@ -815,13 +815,13 @@ jobs:
 #       - name: Update Environment Tag
 #         run: |
 #           echo "Updating tag to ${{ env.TAG }} for environment ${{ env.ENVIRONMENT }}"
-#           if [[ "${{ env.ENVIRONMENT }}" == "sim" ]]; then
-#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
-#             # yq -i '.image.tag = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values-sim.yaml
+#           if [[ "${{ env.ENVIRONMENT }}" == "dev" ]]; then
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev/openmrs-core/openmrs-core.yaml
+#             # yq -i '.image.tag = "${{ env.TAG }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values-dev.yaml
 
-#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev/lafiahms-gateway/lafiahms-gateway.yaml
 
-#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev/lafiahms-frontend/lafiahms-frontend.yaml
 
 #           elif [[ "${{ env.ENVIRONMENT }}" == "uat" ]]; then
 #             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/uat/openmrs-core/openmrs-core.yaml
@@ -887,11 +887,11 @@ jobs:
 #         required: true
 #         type: string
 #       environment:
-#         description: 'Environment to deploy to (sim-final or prod)'
+#         description: 'Environment to deploy to (dev-final or prod)'
 #         required: true
 #         type: choice
 #         options:
-#           - sim-final
+#           - dev-final
 #           - prod
 
 # jobs:
@@ -907,7 +907,7 @@ jobs:
 #   run: |
 #     if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/prod-test" ]]; then
 #       echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
-#       echo "ENVIRONMENT=sim" >> $GITHUB_ENV
+#       echo "ENVIRONMENT=dev" >> $GITHUB_ENV
 #     elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
 #       echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
 #       echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
@@ -948,20 +948,20 @@ jobs:
 
 #       - name: Debug - Verify File Before Update
 #         run: |
-#           ls -la lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
-#           cat lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+#           ls -la lafia-infrastructure-k8-apps/env/dev/lafiahms-gateway/lafiahms-gateway.yaml
+#           cat lafia-infrastructure-k8-apps/env/dev/lafiahms-gateway/lafiahms-gateway.yaml
 
 #       - name: Update Environment Tag
 #         run: |
 #           echo "Updating tag to ${{ env.TAG }} for environment ${{ env.ENVIRONMENT }}"
-#           if [[ "${{ env.ENVIRONMENT }}" == "sim" ]]; then
-#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
-#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
-#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
-#           elif [[ "${{ env.ENVIRONMENT }}" == "sim-final" ]]; then
-#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim-final/openmrs-core/openmrs-core.yaml
-#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim-final/lafiahms-gateway/lafiahms-gateway.yaml
-#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim-final/lafiahms-frontend/lafiahms-frontend.yaml
+#           if [[ "${{ env.ENVIRONMENT }}" == "dev" ]]; then
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev/openmrs-core/openmrs-core.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev/lafiahms-gateway/lafiahms-gateway.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev/lafiahms-frontend/lafiahms-frontend.yaml
+#           elif [[ "${{ env.ENVIRONMENT }}" == "dev-final" ]]; then
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev-final/openmrs-core/openmrs-core.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev-final/lafiahms-gateway/lafiahms-gateway.yaml
+#             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/dev-final/lafiahms-frontend/lafiahms-frontend.yaml
 #           elif [[ "${{ env.ENVIRONMENT }}" == "prod" ]]; then
 #             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/prod/openmrs-core/openmrs-core.yaml
 #             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/prod/lafiahms-gateway/lafiahms-gateway.yaml
@@ -970,7 +970,7 @@ jobs:
 
 #       - name: Debug - Verify File After Update
 #         run: |
-#           cat lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+#           cat lafia-infrastructure-k8-apps/env/dev/lafiahms-gateway/lafiahms-gateway.yaml
 
 #       - name: Commit and Push Tag Changes
 #         run: |
