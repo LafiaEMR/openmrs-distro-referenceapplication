@@ -623,7 +623,7 @@ jobs:
 
             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/uat/lafiahms-gateway/lafiahms-gateway.yaml
 
-            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/uat/lafiahms-frontend/lafiahms-frontend.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/uat/lafiahms-frontend/lafiahms-frontend.yaml
 
           elif [[ "${{ env.ENVIRONMENT }}" == "prod" ]]; then
             yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/prod/openmrs-core/openmrs-core.yaml
