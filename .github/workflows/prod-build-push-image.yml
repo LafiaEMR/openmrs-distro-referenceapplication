@@ -122,50 +122,38 @@
 # Olla Systems for just sim environment
 # ***********************************************************************/
 
+# ***********************************************************************
+# AWS for just sim environment
+
 name: Production Build, Push and Deploy
 
 on:
   push:
-    branches:
-      - prod-test
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: "Tag to deploy (e.g., v1.0.4). Leave empty for prod to use the last UAT tag."
-        required: false
-        default: ""
-        type: string
-      environment:
-        description: "Environment to deploy to (uat or prod)"
-        required: true
-        type: choice
-        options:
-          - uat
-          - prod
+    branches: prod-test
 
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
-          fetch-tags: true
-          fetch-depth: 0
+        uses: actions/checkout@v2
 
-      # - name: Validate Tag for UAT
-      #   if: github.event_name == 'workflow_dispatch' && inputs.environment == 'uat'
-      #   run: |
-      #     if [[ -z "${{ inputs.tag }}" ]]; then
-      #       echo "Error: Tag is required for UAT deployments"
-      #       exit 1
-      #     fi
-      #     git fetch origin tag ${{ inputs.tag }} --no-tags
-      #     if ! git tag -l | grep -q "^${{ inputs.tag }}$"; then
-      #       echo "Error: Tag ${{ inputs.tag }} does not exist"
-      #       exit 1
-      #     fi
+      - name: Set Short SHA
+        run: |
+          echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Images
+        env:
+          TAG: ${{ env.SHORT_SHA }}
+        run: |
+          docker compose build
+          docker compose push
 
       - name: Checkout Helm Chart Repository
         uses: actions/checkout@v4
@@ -182,33 +170,27 @@ jobs:
           chmod +x $HOME/.local/bin/yq
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and Push Docker Images
-        env:
-          TAG: ${{ env.SHORT_SHA }}
+      - name: Update Helm Chart For Apps with New Image Tag
         run: |
-          docker compose build
-          docker compose push
+          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-gateway/values.yaml
+          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-frontend/values.yaml
+          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values.yaml
 
-      - name: Update Environment Tag
-        run: |
-          echo "Updating tag to ${{ env.TAG }} for environment ${{ env.ENVIRONMENT }}"
+          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
+
           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/openmrs-core/openmrs-core.yaml
           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
 
       - name: Commit and Push Helm Chart Changes
         run: |
-          cd lafia-infrastructure-k8-apps-olla
+          cd lafia-infrastructure-k8-apps
           git config user.name "profgreatwonder"
           git config user.email "muoghaluchidinma@gmail.com"
           git add .
-          git commit -m "Update ${{ env.ENVIRONMENT }} tag to ${{ env.TAG }} and repository to ${{ env.REPOSITORY }}" || echo "No changes to commit"
+          git commit -m "Update image tag to ${{ env.SHORT_SHA }}"
           git push origin main
 
       - name: Notify Slack on Success
@@ -219,8 +201,8 @@ jobs:
           SLACK_CHANNEL: deployments
           SLACK_COLOR: good
           SLACK_ICON: https://github.com/github.png?size=48
-          SLACK_MESSAGE: ":rocket: Successfully deployed ${{ env.ENVIRONMENT }} with tag ${{ env.TAG }} to repository ${{ env.REPOSITORY }}"
-          SLACK_TITLE: "Deployment Success"
+          SLACK_MESSAGE: ":rocket: Successfully built and pushed openmrs-distro-referenceapplication/${{ steps.tags.outputs.BRANCH_NAME }} image to ECR"
+          SLACK_TITLE: "Build Success"
           SLACK_USERNAME: GitHub Actions
 
       - name: Notify Slack on Failure
@@ -231,9 +213,123 @@ jobs:
           SLACK_CHANNEL: deployments
           SLACK_COLOR: danger
           SLACK_ICON: https://github.com/github.png?size=48
-          SLACK_MESSAGE: ":x: Failed to deploy ${{ env.ENVIRONMENT }} with tag ${{ env.TAG }} to repository ${{ env.REPOSITORY }}"
-          SLACK_TITLE: "Deployment Failed"
+          SLACK_MESSAGE: ":x: Failed to build openmrs-distro-referenceapplication/${{ steps.tags.outputs.BRANCH_NAME }} image to ECR"
+          SLACK_TITLE: "Build Failed"
           SLACK_USERNAME: GitHub Actions
+# ***********************************************************************
+
+# name: Production Build, Push and Deploy
+
+# on:
+#   push:
+#     branches:
+#       - prod-test
+#   workflow_dispatch:
+#     inputs:
+#       tag:
+#         description: "Tag to deploy (e.g., v1.0.4). Leave empty for prod to use the last UAT tag."
+#         required: false
+#         default: ""
+#         type: string
+#       environment:
+#         description: "Environment to deploy to (uat or prod)"
+#         required: true
+#         type: choice
+#         options:
+#           - uat
+#           - prod
+
+# jobs:
+#   build_and_push:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v4
+#         with:
+#           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+#           fetch-tags: true
+#           fetch-depth: 0
+
+#       # - name: Validate Tag for UAT
+#       #   if: github.event_name == 'workflow_dispatch' && inputs.environment == 'uat'
+#       #   run: |
+#       #     if [[ -z "${{ inputs.tag }}" ]]; then
+#       #       echo "Error: Tag is required for UAT deployments"
+#       #       exit 1
+#       #     fi
+#       #     git fetch origin tag ${{ inputs.tag }} --no-tags
+#       #     if ! git tag -l | grep -q "^${{ inputs.tag }}$"; then
+#       #       echo "Error: Tag ${{ inputs.tag }} does not exist"
+#       #       exit 1
+#       #     fi
+
+#       - name: Checkout Helm Chart Repository
+#         uses: actions/checkout@v4
+#         with:
+#           repository: LafiaEMR/lafia-infrastructure-k8-apps-olla
+#           path: lafia-infrastructure-k8-apps-olla
+#           ssh-key: ${{ secrets.HELM_REPO_SSH_KEY_ACCESS }}
+#           ref: main
+
+#       - name: Install yq
+#         run: |
+#           mkdir -p $HOME/.local/bin
+#           wget https://github.com/mikefarah/yq/releases/download/v4.33.2/yq_linux_amd64 -O $HOME/.local/bin/yq
+#           chmod +x $HOME/.local/bin/yq
+#           echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+#       - name: Log in to Docker Hub
+#         uses: docker/login-action@v3
+#         with:
+#           username: ${{ secrets.DOCKERHUB_USERNAME }}
+#           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+#       - name: Build and Push Docker Images
+#         env:
+#           TAG: ${{ env.SHORT_SHA }}
+#         run: |
+#           docker compose build
+#           docker compose push
+
+#       - name: Update Environment Tag
+#         run: |
+#           echo "Updating tag to ${{ env.TAG }} for environment ${{ env.ENVIRONMENT }}"
+#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/openmrs-core/openmrs-core.yaml
+#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+#           yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+
+#       - name: Commit and Push Helm Chart Changes
+#         run: |
+#           cd lafia-infrastructure-k8-apps-olla
+#           git config user.name "profgreatwonder"
+#           git config user.email "muoghaluchidinma@gmail.com"
+#           git add .
+#           git commit -m "Update ${{ env.ENVIRONMENT }} tag to ${{ env.TAG }} and repository to ${{ env.REPOSITORY }}" || echo "No changes to commit"
+#           git push origin main
+
+#       - name: Notify Slack on Success
+#         if: success()
+#         uses: rtCamp/action-slack-notify@v2
+#         env:
+#           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+#           SLACK_CHANNEL: deployments
+#           SLACK_COLOR: good
+#           SLACK_ICON: https://github.com/github.png?size=48
+#           SLACK_MESSAGE: ":rocket: Successfully deployed ${{ env.ENVIRONMENT }} with tag ${{ env.TAG }} to repository ${{ env.REPOSITORY }}"
+#           SLACK_TITLE: "Deployment Success"
+#           SLACK_USERNAME: GitHub Actions
+
+#       - name: Notify Slack on Failure
+#         if: failure()
+#         uses: rtCamp/action-slack-notify@v2
+#         env:
+#           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+#           SLACK_CHANNEL: deployments
+#           SLACK_COLOR: danger
+#           SLACK_ICON: https://github.com/github.png?size=48
+#           SLACK_MESSAGE: ":x: Failed to deploy ${{ env.ENVIRONMENT }} with tag ${{ env.TAG }} to repository ${{ env.REPOSITORY }}"
+#           SLACK_TITLE: "Deployment Failed"
+#           SLACK_USERNAME: GitHub Actions
 # ***********************************************************************
 
 # AWS for all environments
