@@ -9,7 +9,7 @@ services:
     # dockerfile: Dockerfile
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-gateway-prod:0.0.5
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-gateway-prod:${TAG}
-    image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-gateway-prod-set:${TAG:-latest}
+    image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-gateway-prod:${TAG:-latest}
     restart: "unless-stopped"
     depends_on:
       frontend:
@@ -32,7 +32,7 @@ services:
     # dockerfile: Dockerfile
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-frontend-prod:0.0.5
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-frontend-prod:${TAG}
-    image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-frontend-prod-set:${TAG:-latest}
+    image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-frontend-prod:${TAG:-latest}
     restart: "unless-stopped"
     environment:
       SPA_PATH: /openmrs/spa
@@ -56,7 +56,7 @@ services:
     #   MVN_ARGS: "-DskipTests -U"
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-backend-prod:0.0.5
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-backend-prod:${TAG}
-    image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-backend-prod-set:${TAG:-latest}
+    image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-backend-prod:${TAG:-latest}
     restart:
       "unless-stopped"
       # condition: service_healthy
