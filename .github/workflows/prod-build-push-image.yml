@@ -126,63 +126,60 @@ name: Production Build, Push and Deploy
 
 on:
   push:
-    branches: prod-test
+    branches:
+      - prod-test
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to deploy (e.g., v1.0.4). Leave empty for prod to use the last UAT tag."
+        required: false
+        default: ""
+        type: string
+      environment:
+        description: "Environment to deploy to (uat or prod)"
+        required: true
+        type: choice
+        options:
+          - uat
+          - prod
 
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug Available Tags
+        run: |
+          git ls-remote --tags origin
+          echo "Input tag: ${{ inputs.tag }}"
+          echo "Environment: ${{ inputs.environment }}"
+
       - name: Checkout Code
-        uses: actions/checkout@v2
-
-      - name: Set Short SHA
-        run: |
-          echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: actions/checkout@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+          fetch-tags: true
+          fetch-depth: 0
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build and Push Docker Images
-        env:
-          TAG: ${{ env.SHORT_SHA }}
+      - name: Validate Tag for UAT
+        if: github.event_name == 'workflow_dispatch' && inputs.environment == 'uat'
         run: |
-          docker compose build
-          docker compose push
-
-      # - name: Checkout Helm Chart Repository
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: git@github.com:LafiaEMR/lafia-infrastructure-k8-apps
-      #     path: helm-charts
-      #     ssh-key: ${{ secrets.HELM_REPO_SSH_KEY_ACCESS }}
-      #     ref: main
-      # - name: Setup SSH Key
-      #   run: |
-      #     mkdir -p ~/.ssh
-      #     echo "${{ secrets.HELM_REPO_SSH_KEY }}" > ~/.ssh/id_rsa
-      #     chmod 600 ~/.ssh/id_rsa
-      #     ssh-keyscan github.com >> ~/.ssh/known_hosts
+          if [[ -z "${{ inputs.tag }}" ]]; then
+            echo "Error: Tag is required for UAT deployments"
+            exit 1
+          fi
+          git fetch origin tag ${{ inputs.tag }} --no-tags
+          if ! git tag -l | grep -q "^${{ inputs.tag }}$"; then
+            echo "Error: Tag ${{ inputs.tag }} does not exist"
+            exit 1
+          fi
 
       - name: Checkout Helm Chart Repository
         uses: actions/checkout@v4
         with:
-          repository: LafiaEMR/lafia-infrastructure-k8-apps
-          path: lafia-infrastructure-k8-apps
+          repository: LafiaEMR/lafia-infrastructure-k8-apps-olla
+          path: lafia-infrastructure-k8-apps-olla
           ssh-key: ${{ secrets.HELM_REPO_SSH_KEY_ACCESS }}
           ref: main
-
-      # - name: Install yq
-      #   run: |
-      #     wget https://github.com/mikefarah/yq/releases/download/v4.33.2/yq_linux_amd64 -O /usr/bin/yq
-      #     chmod +x /usr/bin/yq
 
       - name: Install yq
         run: |
@@ -191,28 +188,90 @@ jobs:
           chmod +x $HOME/.local/bin/yq
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Update Helm Chart For Apps with New Image Tag
+      - name: Display Last UAT Tag for Prod
+        if: github.event_name == 'workflow_dispatch' && inputs.environment == 'prod'
         run: |
-          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-gateway/values.yaml
-          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/lafiahms-frontend/values.yaml
-          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/helm-charts/openmrs-core/values.yaml
+          echo "Last UAT tag (for reference):"
+          LAST_UAT_TAG=$(yq '.spec.source.helm.parameters[] | select(.name == "image.tag") | .value' lafia-infrastructure-k8-apps-olla/env/uat/openmrs-core/openmrs-core.yaml)
+          echo $LAST_UAT_TAG
 
-          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
-          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
-          # yq -i '.image.tag = "${{ env.SHORT_SHA }}"' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
+      - name: Determine Tag and Environment
+        run: |
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/prod-test" ]]; then
+            echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
+            echo "ENVIRONMENT=sim" >> $GITHUB_ENV
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.environment }}" == "uat" ]]; then
+            echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
+            echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.environment }}" == "prod" ]]; then
+            if [[ -n "${{ inputs.tag }}" ]]; then
+              echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
+            else
+              echo "Fetching last UAT tag..."
+              LAST_UAT_TAG=$(yq '.spec.source.helm.parameters[] | select(.name == "image.tag") | .value' lafia-infrastructure-k8-apps-olla/env/uat/openmrs-core/openmrs-core.yaml)
+              if [[ -z "$LAST_UAT_TAG" ]]; then
+                echo "Error: Could not determine last UAT tag"
+                exit 1
+              fi
+              echo "TAG=$LAST_UAT_TAG" >> $GITHUB_ENV
+              echo "Last UAT tag: $LAST_UAT_TAG"
+            fi
+            echo "ENVIRONMENT=${{ inputs.environment }}" >> $GITHUB_ENV
+          fi
+          # Set Docker Hub repository
+          REPO="yourusername/lafiaopenmrs-core-backend"
+          echo "REPOSITORY=$REPO" >> $GITHUB_ENV
 
-          yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/openmrs-core/openmrs-core.yaml
-          yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
-          yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.SHORT_SHA }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Images
+        if: github.event_name == 'push' || inputs.environment == 'uat'
+        env:
+          TAG: ${{ env.TAG }}
+          REPOSITORY: ${{ env.REPOSITORY }}
+        run: |
+          echo "Building and pushing to $REPOSITORY:$TAG"
+          sed -i "s|image: .*|image: $REPOSITORY:$TAG|" docker-compose.yml
+          docker compose build
+          docker compose push
+
+      - name: Update Environment Tag
+        run: |
+          echo "Updating tag to ${{ env.TAG }} for environment ${{ env.ENVIRONMENT }}"
+          if [[ "${{ env.ENVIRONMENT }}" == "sim" ]]; then
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/openmrs-core/openmrs-core.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.repository") | .value = "${{ env.REPOSITORY }}") + map(select(.name != "image.repository")))' lafia-infrastructure-k8-apps-olla/env/sim/openmrs-core/openmrs-core.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.repository") | .value = "${{ env.REPOSITORY }}") + map(select(.name != "image.repository")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-gateway/lafiahms-gateway.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.repository") | .value = "${{ env.REPOSITORY }}") + map(select(.name != "image.repository")))' lafia-infrastructure-k8-apps-olla/env/sim/lafiahms-frontend/lafiahms-frontend.yaml
+          elif [[ "${{ env.ENVIRONMENT }}" == "uat" ]]; then
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/uat/openmrs-core/openmrs-core.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.repository") | .value = "${{ env.REPOSITORY }}") + map(select(.name != "image.repository")))' lafia-infrastructure-k8-apps-olla/env/uat/openmrs-core/openmrs-core.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/uat/lafiahms-gateway/lafiahms-gateway.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.repository") | .value = "${{ env.REPOSITORY }}") + map(select(.name != "image.repository")))' lafia-infrastructure-k8-apps-olla/env/uat/lafiahms-gateway/lafiahms-gateway.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/uat/lafiahms-frontend/lafiahms-frontend.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.repository") | .value = "${{ env.REPOSITORY }}") + map(select(.name != "image.repository")))' lafia-infrastructure-k8-apps-olla/env/uat/lafiahms-frontend/lafiahms-frontend.yaml
+          elif [[ "${{ env.ENVIRONMENT }}" == "prod" ]]; then
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/prod/openmrs-core/openmrs-core.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.repository") | .value = "${{ env.REPOSITORY }}") + map(select(.name != "image.repository")))' lafia-infrastructure-k8-apps-olla/env/prod/openmrs-core/openmrs-core.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/prod/lafiahms-gateway/lafiahms-gateway.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.repository") | .value = "${{ env.REPOSITORY }}") + map(select(.name != "image.repository")))' lafia-infrastructure-k8-apps-olla/env/prod/lafiahms-gateway/lafiahms-gateway.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.tag") | .value = "${{ env.TAG }}") + map(select(.name != "image.tag")))' lafia-infrastructure-k8-apps-olla/env/prod/lafiahms-frontend/lafiahms-frontend.yaml
+            yq -i '.spec.source.helm.parameters |= (map(select(.name == "image.repository") | .value = "${{ env.REPOSITORY }}") + map(select(.name != "image.repository")))' lafia-infrastructure-k8-apps-olla/env/prod/lafiahms-frontend/lafiahms-frontend.yaml
+          fi
 
       - name: Commit and Push Helm Chart Changes
         run: |
-          cd lafia-infrastructure-k8-apps
+          cd lafia-infrastructure-k8-apps-olla
           git config user.name "profgreatwonder"
           git config user.email "muoghaluchidinma@gmail.com"
-          # git add helm-charts/lafiahms-gateway/values.yaml helm-charts/lafiahms-frontend/values.yaml helm-charts/openmrs-core/values.yaml
           git add .
-          git commit -m "Update image tag to ${{ env.SHORT_SHA }}"
+          git commit -m "Update ${{ env.ENVIRONMENT }} tag to ${{ env.TAG }} and repository to ${{ env.REPOSITORY }}" || echo "No changes to commit"
           git push origin main
 
       - name: Notify Slack on Success
@@ -223,8 +282,8 @@ jobs:
           SLACK_CHANNEL: deployments
           SLACK_COLOR: good
           SLACK_ICON: https://github.com/github.png?size=48
-          SLACK_MESSAGE: ":rocket: Successfully built and pushed openmrs-distro-referenceapplication/${{ steps.tags.outputs.BRANCH_NAME }} image to ECR"
-          SLACK_TITLE: "Build Success"
+          SLACK_MESSAGE: ":rocket: Successfully deployed ${{ env.ENVIRONMENT }} with tag ${{ env.TAG }} to repository ${{ env.REPOSITORY }}"
+          SLACK_TITLE: "Deployment Success"
           SLACK_USERNAME: GitHub Actions
 
       - name: Notify Slack on Failure
@@ -235,8 +294,8 @@ jobs:
           SLACK_CHANNEL: deployments
           SLACK_COLOR: danger
           SLACK_ICON: https://github.com/github.png?size=48
-          SLACK_MESSAGE: ":x: Failed to build openmrs-distro-referenceapplication/${{ steps.tags.outputs.BRANCH_NAME }} image to ECR"
-          SLACK_TITLE: "Build Failed"
+          SLACK_MESSAGE: ":x: Failed to deploy ${{ env.ENVIRONMENT }} with tag ${{ env.TAG }} to repository ${{ env.REPOSITORY }}"
+          SLACK_TITLE: "Deployment Failed"
           SLACK_USERNAME: GitHub Actions
 # ***********************************************************************
 
