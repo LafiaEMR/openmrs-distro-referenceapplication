@@ -661,9 +661,9 @@ jobs:
           echo "ECR_GATEWAY=571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-gateway-prod" >> $GITHUB_ENV
 
           # Define Docker Hub repositories
-          echo "DOCKERHUB_FRONTEND=profgreatwonder/lafiahms-frontend-olla" >> $GITHUB_ENV
-          echo "DOCKERHUB_BACKEND=profgreatwonder/openmrs-core-olla" >> $GITHUB_ENV
-          echo "DOCKERHUB_GATEWAY=profgreatwonder/lafiaopenmrs-core-gateway-olla" >> $GITHUB_ENV
+          echo "DOCKERHUB_FRONTEND=profgreatwonder/lafiahms-frontend" >> $GITHUB_ENV
+          echo "DOCKERHUB_BACKEND=profgreatwonder/openmrs-core" >> $GITHUB_ENV
+          echo "DOCKERHUB_GATEWAY=profgreatwonder/lafiaopenmrs-core-gateway" >> $GITHUB_ENV
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
