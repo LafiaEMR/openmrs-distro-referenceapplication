@@ -10,8 +10,7 @@ services:
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-gateway-prod:0.0.5
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-gateway-prod:${TAG}
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-gateway-prod:${TAG:-latest}
-    # image: profgreatwonder/lafiaopenmrs-core-gateway:${TAG:-latest}
-    image: profgreatwonder/lafiaopenmrs-core-gateway:${TAG}
+    image: profgreatwonder/lafiaopenmrs-core-gateway:${TAG:-latest}
     restart: "unless-stopped"
     depends_on:
       frontend:
@@ -35,8 +34,7 @@ services:
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-frontend-prod:0.0.5
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-frontend-prod:${TAG}
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-frontend-prod:${TAG:-latest}
-    # image: profgreatwonder/lafiahms-frontend:${TAG:-latest}
-    image: profgreatwonder/lafiahms-frontend:${TAG}
+    image: profgreatwonder/lafiahms-frontend:${TAG:-latest}
     restart: "unless-stopped"
     environment:
       SPA_PATH: /openmrs/spa
@@ -61,8 +59,7 @@ services:
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-backend-prod:0.0.5
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-backend-prod:${TAG}
     # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-backend-prod:${TAG:-latest}
-    # image: profgreatwonder/openmrs-core:${TAG:-latest}
-    image: profgreatwonder/openmrs-core:${TAG}
+    image: profgreatwonder/openmrs-core:${TAG:-latest}
     restart:
       "unless-stopped"
       # condition: service_healthy
