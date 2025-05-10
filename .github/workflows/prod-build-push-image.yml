@@ -120,10 +120,7 @@
 # ***********************************************************************
 
 # Olla Systems for just sim environment
-# ***********************************************************************/
-
 # ***********************************************************************
-# AWS for just sim environment
 
 name: Production Build, Push and Deploy
 
@@ -186,7 +183,7 @@ jobs:
 
       - name: Commit and Push Helm Chart Changes
         run: |
-          cd lafia-infrastructure-k8-apps
+          cd lafia-infrastructure-k8-apps-olla
           git config user.name "profgreatwonder"
           git config user.email "muoghaluchidinma@gmail.com"
           git add .
