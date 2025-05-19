@@ -2,7 +2,15 @@ version: "3.7"
 
 services:
   gateway:
-    image: thevo/lafia-openmrs-gateway:dev
+    # build:
+    # context: https://github.com/LafiaEMR/openmrs-distro-referenceapplication#dev2
+    # dockerfile: gateway/Dockerfile
+    # context: ./gateway
+    # dockerfile: Dockerfile
+    # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-gateway-prod:0.0.5
+    # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-gateway-prod:${TAG}
+    # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-gateway-prod:${TAG:-latest}
+    image: profgreatwonder/lafiaopenmrs-core-gateway:${TAG:-latest}
     restart: "unless-stopped"
     depends_on:
       frontend:
@@ -18,7 +26,15 @@ services:
       - "80:80"
 
   frontend:
-    image:  thevo/lafia-openmrs-frontend:dev
+    # build:
+    # context: https://github.com/LafiaEMR/openmrs-distro-referenceapplication#dev2
+    # context: ./frontend/Dockerfile
+    # context: ./frontend
+    # dockerfile: Dockerfile
+    # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-frontend-prod:0.0.5
+    # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-frontend-prod:${TAG}
+    # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-frontend-prod:${TAG:-latest}
+    image: profgreatwonder/lafiahms-frontend:${TAG:-latest}
     restart: "unless-stopped"
     environment:
       SPA_PATH: /openmrs/spa
@@ -32,47 +48,42 @@ services:
       - backend
 
   backend:
-    # image: openmrs/openmrs-reference-application-3-backend:${TAG:-dev3}
-    image: openmrs-backend
-    restart: "unless-stopped"
-    depends_on:
-      - postgres-db
-          # condition: service_healthy
+    # build:
+    # context: https://github.com/LafiaEMR/openmrs-core.git#dev2
+    # dockerfile: Dockerfile
+    # context: https://github.com/LafiaEMR/openmrs-core/blob/dev2/Dockerfile
+    # context: ../openmrs-core
+    # dockerfile: Dockerfile
+    # args:
+    #   MVN_ARGS: "-DskipTests -U"
+    # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-backend-prod:0.0.5
+    # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-backend-prod:${TAG}
+    # image: 571600871041.dkr.ecr.eu-west-2.amazonaws.com/lafiaopenmrs-core-backend-prod:${TAG:-latest}
+    image: profgreatwonder/openmrs-core:${TAG:-latest}
+    restart:
+      "unless-stopped"
+      # condition: service_healthy
 
     environment:
-      # OMRS_DB: "postgresql"
+      OMRS_ADD_DEMO_DATA: "false"
       OMRS_CONFIG_MODULE_WEB_ADMIN: "true"
-      OMRS_CONFIG_AUTO_UPDATE_DATABASE: "true"
-      OMRS_CONFIG_CREATE_TABLES: "true"
-      OMRS_CONFIG_CONNECTION_SERVER: postgres-db
-      OMRS_CONFIG_CONNECTION_DATABASE: openmrs
-      OMRS_CONFIG_CONNECTION_USERNAME: ${OPENMRS_DB_USER:-openmrs}
-      OMRS_CONFIG_CONNECTION_PASSWORD: ${OPENMRS_DB_PASSWORD:-openmrs}
-      OMRS_CONFIG_CONNECTION_PORT:  ${OMRS_CONFIG_CONNECTION_PORT:-5432}
-      OMRS_DB_DRIVER_CLASS: org.postgresql.Driver
-      OMRS_CONFIG_CONNECTION_URL: jdbc:postgresql://postgres-db:5432/openmrs
+      OMRS_CONFIG_AUTO_UPDATE_DATABASE: "false"
+      OMRS_CONFIG_CREATE_TABLES: "false"
+      OMRS_CONFIG_CONNECTION_SERVER: ${OPENMRS_DB_HOST:-hmsdb-dev-3.crqmcea0mlot.eu-west-2.rds.amazonaws.com}
+      OMRS_CONFIG_CONNECTION_DATABASE: ${OPENMRS_DB_NAME:-lafiahmsdb}
+      OMRS_CONFIG_CONNECTION_USERNAME: ${OPENMRS_DB_USERNAME:-hmsdbdev3}
+      OMRS_CONFIG_CONNECTION_PASSWORD: ${OPENMRS_DB_PASSWORD:-fVB64mRT6CGEvFdDS2Yx}
+      OMRS_CONFIG_CONNECTION_PORT: ${OMRS_CONFIG_CONNECTION_PORT:-5432}
+      OMRS_DB_DRIVER_CLASS: ${OPENMRS_DB_DRIVER:-org.postgresql.Driver}
+      OMRS_CONFIG_CONNECTION_URL: ${OPENMRS_DB_URL:-jdbc:postgresql://hmsdb-dev-3.crqmcea0mlot.eu-west-2.rds.amazonaws.com/lafiahmsdb}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/openmrs"]
       timeout: 5s
     volumes:
       - openmrs-data:/openmrs/data
 
-  # PostgreSQL
-  postgres-db:
-    image: postgres:15
-    restart: "unless-stopped"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${OMRS_DB_USER:-openmrs}"]
-      interval: 3s
-      timeout: 1s
-      retries: 5
-    environment:
-      POSTGRES_DB: openmrs
-      POSTGRES_USER: ${OMRS_DB_USER:-openmrs}
-      POSTGRES_PASSWORD: ${OMRS_DB_PASSWORD:-openmrs}
-    volumes:
-      - pg-db-data:/var/lib/postgresql/data
+# DOCKER_BUILDKIT=1 docker compose build - if you're building from github repo
+# docker compose down -v --rmi all - remove container
 
 volumes:
   openmrs-data: ~
-  pg-db-data: ~
